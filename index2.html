@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AR Promosi Kampus - ITB Asia</title>
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
+  <script src="style.css"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* === MENU LANDING === */
+    #menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: url('assets/bgasia.jpg') no-repeat center center;
+        background-size: cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        z-index: 20;
+    }
+
+    #menu h1 {
+      color: white;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px #000;
+      margin-bottom: 20px;
+    }
+
+    #enterBtn {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      background-color: #ff5555;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    #enterBtn:hover {
+      background-color: #e64444;
+      transform: scale(1.05);
+    }
+
+    /* === TOMBOL UI UNTUK AR === */
+    #ui-buttons {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 10;
+    }
+
+    button.nav {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #ff5555;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      opacity: 0.9;
+    }
+
+    button.nav:disabled {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+
+    #exitBtn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px; /* POJOK KANAN */
+        padding: 12px 20px;
+        font-size: 14px;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        z-index: 15;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        opacity: 0.9;
+    }
+    #exitBtn:hover {
+        background-color: #555;
+    }
+
+
+    /* Sembunyikan a-scene di awal */
+    a-scene {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- === MENU PEMBUKA === -->
+  <div id="menu">
+    <h1>Selamat Datang di AR Kampus ITB Asia</h1>
+    <button id="enterBtn">Masuk ke Program</button>
+  </div>
+
+  <!-- === TOMBOL UI === -->
+  <div id="ui-buttons" style="display:none;">
+    <button id="prevBtn" class="nav" disabled>Previous</button>
+    <button id="nextBtn" class="nav">Next</button>
+    <button id="exitBtn" style="display: none;">Keluar</button>
+  </div>
+
+  <!-- === SCENE AR === -->
+  <a-scene embedded arjs>
+    <a-assets>
+      <a-asset-item id="maskot1" src="assets/anes1.glb"></a-asset-item>
+      <a-asset-item id="maskot2" src="assets/anes2.glb"></a-asset-item>
+      <a-asset-item id="maskot3" src="assets/anes3.glb"></a-asset-item>
+      <a-asset-item id="maskot4" src="assets/anes4.glb"></a-asset-item>
+      <audio id="bgm" src="assets/LAGU TET TET TERE TET BACKSOUND TUTORIAL YOUTUBE AUDIO.. - SAMMINA CHANNEL.mp3" preload="auto"></audio>
+      <!-- Tombol Exit -->
+      
+
+    </a-assets>
+
+    <a-marker id="marker" preset="hiro">
+      <a-entity id="model0" gltf-model="#maskot1" scale="0.5 0.5 0.5" position="0 0 -1" rotation="-80 0 0" visible="true"></a-entity>
+      <a-entity id="model1" gltf-model="#maskot2" scale="0.5 0.5 0.5" position="0 0 -1" rotation="-80 0 0" visible="false"></a-entity>
+      <a-entity id="model2" gltf-model="#maskot3" scale="0.5 0.5 0.5" position="0 0 -1" rotation="-80 0 0" visible="false"></a-entity>
+      <a-entity id="model3" gltf-model="#maskot4" scale="0.5 0.5 0.5" position="0 0 -1" rotation="-80 0 0" visible="false"></a-entity>
+
+      <a-plane id="panel" position="0 1.5 -2" rotation="-80 0 0" width="2.5" height="0.8" color="#fff" opacity="0.85">
+        <a-text id="dialogText" value="Halo! Aku Anes, maskot dari ITB Asia Malang!" align="center" color="#000" position="0 0 0.01" wrap-count="30"></a-text>
+      </a-plane>
+
+      <a-entity id="bgmSound" sound="src: #bgm; autoplay: false; loop: true; volume: 0.5"></a-entity>
+    </a-marker>
+    <a-camera></a-camera>
+  </a-scene>
+
+  <!-- === SCRIPT === -->
+  <script>
+    const texts = [
+      "Halo! Aku Anes, maskot dari ITB Asia Malang!",
+      "Kampus ini modern dan menyenangkan untuk belajar!",
+      "Kami punya fasilitas seperti lab, perpustakaan, dan ruang digital!",
+      "Ayo gabung dan jadi bagian dari masa depan cemerlang!"
+    ];
+
+    const models = [
+      document.getElementById("model0"),
+      document.getElementById("model1"),
+      document.getElementById("model2"),
+      document.getElementById("model3")
+    ];
+
+    let index = 0;
+
+    const dialog = document.getElementById("dialogText");
+    const nextBtn = document.getElementById("nextBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const exitBtn = document.getElementById("exitBtn");
+
+    function updateSlide() {
+      models.forEach((model, i) => {
+        model.setAttribute('visible', i === index);
+      });
+      dialog.setAttribute('value', texts[index]);
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index === models.length - 1;
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (index < models.length - 1) {
+        index++;
+        updateSlide();
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (index > 0) {
+        index--;
+        updateSlide();
+      }
+    });
+
+    updateSlide();
+
+    exitBtn.addEventListener("click", () => {
+    // Kembali ke menu
+        document.getElementById("menu").style.display = "flex";
+        document.querySelector("a-scene").style.display = "none";
+        document.getElementById("ui-buttons").style.display = "none";
+        exitBtn.style.display = "none";
+    });
+
+    // === BACKGROUND MUSIC ON MARKER DETECTED ===
+    const marker = document.getElementById("marker");
+    const bgmEntity = document.getElementById("bgmSound");
+
+    marker.addEventListener("markerFound", () => {
+      bgmEntity.components.sound.playSound();
+    });
+
+    marker.addEventListener("markerLost", () => {
+      bgmEntity.components.sound.stopSound();
+    });
+
+    // === TRANSISI DARI MENU KE PROGRAM ===
+    document.getElementById("enterBtn").addEventListener("click", () => {
+      document.getElementById("menu").style.display = "none";
+      document.querySelector("a-scene").style.display = "block";
+      document.getElementById("ui-buttons").style.display = "flex";
+      exitBtn.style.display = "block";
+    });
+  </script>
+</body>
+</html>
